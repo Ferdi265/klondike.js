@@ -179,9 +179,9 @@ const Card = (value, suit, hidden, backcolor) => {
                     assetName = "A";
                 } else if (this.value === 11) {
                     assetName = "J";
-                } else if (this.value === 11) {
+                } else if (this.value === 12) {
                     assetName = "Q";
-                } else if (this.value === 11) {
+                } else if (this.value === 13) {
                     assetName = "K";
                 } else {
                     assetName = String(this.value);
