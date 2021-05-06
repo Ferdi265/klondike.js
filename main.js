@@ -1,13 +1,3 @@
-const inherit = (base, object) => {
-    const instance = Object.create(base);
-
-    Object.keys(object).forEach((key) => {
-        instance[key] = object[key];
-    });
-
-    return instance;
-};
-
 const Asset = (name, path) => {
     return inherit(null, {
         name,
@@ -102,9 +92,11 @@ const Canvas = () => {
         update_size() {
             this.dom.width = window.innerWidth;
             this.dom.height = window.innerHeight;
+            console.info(`[Canvas] updated size to ${this.dom.width} x ${this.dom.height}`);
         },
 
         register() {
+            console.info("[Canvas] listening for resize events");
             document.body.innerHTML = "";
             document.body.appendChild(canvas.dom);
 
@@ -258,37 +250,70 @@ const CardFanVer = (backcolor, max, xoffset, yoffset) => {
     return CardStack(backcolor, max, xoffset, yoffset);
 };
 
-/* global */ canvas = null;
-/* global */ assetLoader = null;
-/* global */ assetList = [];
-/* global */ defaultBackcolor = "B";
+const Engine = () => {
+    return inherit(null, {
+        canvas: null,
+        assetLoader: null,
+        assetList: null,
 
-const populateAssets = () => {
-    const suits = ["S", "C", "H", "D"];
-    const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    const other = ["J", "E", "N", "BB", "BR"];
+        initialize(callback) {
+            this.initializeCanvas();
+            this.loadAssets(callback);
+        },
 
-    const addAsset = (name) => {
-        assetList.push(Asset(name, `assets/${name}.svg`));
-    };
+        initializeCanvas() {
+            console.info("[Engine] creating canvas");
+            this.canvas = Canvas();
+            this.canvas.update_size();
+            this.canvas.register();
+        },
 
-    suits.forEach((suit) => {
-        values.forEach((value) => {
-            addAsset(value + suit);
-        });
+        loadAssets(callback) {
+            if (callback === undefined) callback = () => {};
+
+            console.info("[Engine] loading assets");
+            this.populateAssets();
+            this.assetLoader = AssetLoader();
+            this.assetLoader.load(this.assetList, (success) => {
+                if (success) {
+                    console.info("[Engine] finished loading assets");
+                } else {
+                    console.error("[Engine] error loading assets");
+                }
+
+                callback(success);
+            });
+        },
+
+        populateAssets() {
+            const suits = ["S", "C", "H", "D"];
+            const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+            const other = ["J", "E", "N", "BB", "BR"];
+
+            this.assetList = [];
+
+            const addAsset = (name) => {
+                this.assetList.push(Asset(name, `assets/${name}.svg`));
+            };
+
+            suits.forEach((suit) => {
+                values.forEach((value) => {
+                    addAsset(value + suit);
+                });
+            });
+
+            other.forEach(addAsset);
+        }
     });
-
-    other.forEach(addAsset);
 };
 
-const initialize = () => {
-    canvas = Canvas();
-    canvas.update_size();
-    canvas.register();
+/* global */ engine = null;
+/* global */ defaultBackcolor = "B";
 
-    assetLoader = AssetLoader();
-    populateAssets();
-    assetLoader.load(assetList, (success) => {
+const initialize = () => {
+    engine = Engine();
+
+    engine.initialize((success) => {
         if (success) {
             console.info("[Initialize] finished loading assets");
         } else {
