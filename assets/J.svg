@@ -20,7 +20,6 @@
 		<use xlink:href="#suitD" transform="translate(20.5, 52) scale(2)"></use>
 	</g>
 	<g style="fill: #000;">
-		<!--<use xlink:href="#suit" transform="translate(20.5, 34) scale(2)"></use>-->
 		<use xlink:href="#suitC" transform="translate(6.5, 34) scale(2)"></use>
 		<use xlink:href="#suitS" transform="translate(34.5, 34) scale(2)"></use>
 	</g>
