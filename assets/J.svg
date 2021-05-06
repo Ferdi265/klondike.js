@@ -12,15 +12,32 @@
 	<symbol id="suitD" width="8" height="10">
 		<path d="M 4 0 l 4 5 l -4 5 l -4 -5 z"></path>
 	</symbol>
+	<symbol id="suitAll" width="22" height="27.5">
+		<g style="fill: #f00;">
+			<use xlink:href="#suitH" transform="translate(7, 0)"></use>
+			<use xlink:href="#suitD" transform="translate(7, 17.5)"></use>
+		</g>
+		<g style="fill: #000;">
+			<use xlink:href="#suitC" transform="translate(0, 8.75)"></use>
+			<use xlink:href="#suitS" transform="translate(14, 8.75)"></use>
+		</g>
+	</symbol>
+	<symbol id="suit" width="8" height="10">
+		<use xlink:href="#suitAll" transform="scale(0.363636)"></use>
+	</symbol>
+	<symbol id="rank" width="8" height="12">
+		<path d="M 2 0 h 4 l 2 2 v 8 l -2 2 h -4 l -2 -2 v -8 z"></path>
+	</symbol>
+	<symbol id="index" width="57" height="88">
+		<use xlink:href="#rank" x="6" y="6"></use>
+		<use xlink:href="#suit" x="6" y="20"></use>
+	</symbol>
 	
 	<rect x="1.5" y="1.5" width="54" height="85" fill="#fff"></rect>
 	<path d="M 2 0 h 53 l 2 2 v 84 l -2 2 h -53 l -2 -2 v -84 z m 0 2 v 84 h 53 v -84 z"></path>
-	<g style="fill: #f00;">
-		<use xlink:href="#suitH" transform="translate(20.5, 16) scale(2)"></use>
-		<use xlink:href="#suitD" transform="translate(20.5, 52) scale(2)"></use>
-	</g>
-	<g style="fill: #000;">
-		<use xlink:href="#suitC" transform="translate(6.5, 34) scale(2)"></use>
-		<use xlink:href="#suitS" transform="translate(34.5, 34) scale(2)"></use>
+	<g>
+		<use xlink:href="#index"></use>
+		<use xlink:href="#index" transform="rotate(180, 28.5, 44)"></use>
+		<use xlink:href="#suit" transform="translate(16.5, 29) scale(3)"></use>
 	</g>
 </svg>
