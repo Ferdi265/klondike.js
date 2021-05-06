@@ -193,6 +193,7 @@ const CardStack = (backcolor, xoffset, yoffset) => {
 
     return inherit(null, {
         cards: [],
+        max: 5,
 
         hidden: backcolor !== undefined,
         backcolor,
@@ -213,7 +214,7 @@ const CardStack = (backcolor, xoffset, yoffset) => {
             } else {
                 canvas.ctx.save();
 
-                this.cards.slice(-5).forEach((card) => {
+                this.cards.slice(-this.max).forEach((card) => {
                     if (this.hidden) {
                         cardBack.draw(canvas, assetLoader);
                     } else {
