@@ -186,6 +186,38 @@ const Card = (value, suit) => {
     });
 };
 
+const CardStack = (backcolor) => {
+    return inherit(null, {
+        cards: [],
+        hidden: backcolor !== undefined,
+        backcolor,
+
+        draw(canvas, assetLoader) {
+            const cardNone = CardNone();
+            const cardBack = this.hidden ? CardBack(this.backcolor) : null;
+            const height = assetLoader.get(cardNone.texture()).height;
+
+            if (this.cards.length === 0) {
+                cardNone.draw(canvas, assetLoader);
+            } else {
+                canvas.ctx.save();
+
+                this.cards.slice(-5).forEach((card) => {
+                    if (this.hidden) {
+                        cardBack.draw(canvas, assetLoader);
+                    } else {
+                        card.draw(canvas, assetLoader);
+                    }
+
+                    canvas.ctx.translate(0, -height / 16);
+                });
+
+                canvas.ctx.restore();
+            }
+        }
+    });
+};
+
 /* global */ canvas = null;
 /* global */ assetLoader = null;
 /* global */ assetList = [];
