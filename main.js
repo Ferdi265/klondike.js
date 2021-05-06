@@ -231,7 +231,9 @@ const CardStack = (backcolor, xoffset, yoffset) => {
 };
 
 const CardFan = (backcolor) => {
-    return CardStack(backcolor, 1/3, 0);
+    const fan = CardStack(backcolor, 1/3, 0);
+    fan.max = Infinity;
+    return fan;
 };
 
 /* global */ canvas = null;
