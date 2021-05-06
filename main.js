@@ -31,6 +31,7 @@ const AssetLoader = () => {
 
             const successCb = (asset) => {
                 console.debug(`[AssetLoader] loaded '${asset.name}'`);
+                self.assets[asset.name] = asset;
 
                 asset.loaded = true;
                 loaded++;
