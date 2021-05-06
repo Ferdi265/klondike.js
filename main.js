@@ -23,14 +23,14 @@ const AssetLoader = () => {
         assets: {},
 
         has(assetName) {
-            if (!Object.property.hasOwnProperty.call(this.assets, assetName)) return false;
+            if (!Object.prototype.hasOwnProperty.call(this.assets, assetName)) return false;
             if (!this.assets[assetName].loaded) return false;
 
             return true;
         },
 
         get(assetName) {
-            if (!Object.property.hasOwnProperty.call(this.assets, assetName)) {
+            if (!Object.prototype.hasOwnProperty.call(this.assets, assetName)) {
                 throw Error(`[AssetLoader] asset ${assetName} does not exist`);
             }
             if (!this.assets[assetName].loaded) {
