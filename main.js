@@ -186,14 +186,15 @@ const Card = (value, suit) => {
     });
 };
 
-const CardStack = (backcolor, xoffset, yoffset) => {
+const CardStack = (backcolor, xoffset, yoffset, max) => {
     if (xoffset === undefined) xoffset = 0;
     if (yoffset === undefined && xoffset === 0) yoffset = -1/16;
     if (yoffset === undefined && xoffset !== 0) yoffset = 0;
+    if (max === undefined) max = 5;
 
     return inherit(null, {
         cards: [],
-        max: 5,
+        max,
 
         hidden: backcolor !== undefined,
         backcolor,
@@ -231,9 +232,7 @@ const CardStack = (backcolor, xoffset, yoffset) => {
 };
 
 const CardFan = (backcolor) => {
-    const fan = CardStack(backcolor, 1/3, 0);
-    fan.max = Infinity;
-    return fan;
+    return CardStack(backcolor, 1/3, 0, 13);
 };
 
 /* global */ canvas = null;
