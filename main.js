@@ -100,7 +100,7 @@ const Canvas = () => {
             document.body.innerHTML = "";
             document.body.appendChild(this.dom);
 
-            document.body.addEventListener("resize", this.update_size);
+            window.addEventListener("resize", () => this.update_size());
         }
     });
 };
