@@ -135,6 +135,8 @@ const ConstTexturedObject = (assetName) => {
 };
 
 const CardBack = (backcolor) => {
+    if (backcolor === undefined) backcolor = defaultBackcolor;
+
     return ConstTexturedObject("B" + backcolor);
 };
 
@@ -146,10 +148,15 @@ const CardNone = () => {
     return ConstTexturedObject("N");
 };
 
-const Card = (value, suit) => {
+const Card = (value, suit, hidden, backcolor) => {
+    if (hidden === undefined) hidden = false;
+    if (backcolor === undefined) backcolor = defaultBackcolor;
+
     return inherit(TexturedObject(), {
         value,
         suit,
+        hidden,
+        backcolor,
 
         negativeValue() {
             if (this.value === null) {
@@ -163,7 +170,9 @@ const Card = (value, suit) => {
 
         texture() {
             let assetName;
-            if (this.value === null) {
+            if (this.hidden) {
+                assetName = "B" + this.backcolor;
+            } else if (this.value === null) {
                 assetName = "J";
             } else {
                 if (this.value === 1) {
@@ -192,11 +201,14 @@ const CardStack = (backcolor, max, xoffset, yoffset) => {
     if (yoffset === undefined && xoffset === 0) yoffset = -1/16;
     if (yoffset === undefined && xoffset !== 0) yoffset = 0;
 
+    const hidden = backcolor !== undefined;
+    if (backcolor === undefined) backcolor = defaultBackcolor;
+
     return inherit(null, {
         cards: [],
         max,
 
-        hidden: backcolor !== undefined,
+        hidden,
         backcolor,
 
         xoffset,
@@ -231,9 +243,17 @@ const CardStack = (backcolor, max, xoffset, yoffset) => {
     });
 };
 
-const CardFan = (backcolor, max, xoffset, yoffset) => {
+const CardFanHor = (backcolor, max, xoffset, yoffset) => {
     if (max === undefined) max = 13;
     if (xoffset === undefined) xoffset = 1/3;
+
+    return CardStack(backcolor, max, xoffset, yoffset);
+};
+
+const CardFanVer = (backcolor, max, xoffset, yoffset) => {
+    if (max === undefined) max = 13;
+    if (xoffset === undefined) xoffset = 0;
+    if (yoffset === undefined && xoffset === 0) yoffset = 1/5;
 
     return CardStack(backcolor, max, xoffset, yoffset);
 };
@@ -241,6 +261,7 @@ const CardFan = (backcolor, max, xoffset, yoffset) => {
 /* global */ canvas = null;
 /* global */ assetLoader = null;
 /* global */ assetList = [];
+/* global */ defaultBackcolor = "B";
 
 const populateAssets = () => {
     const suits = ["S", "C", "H", "D"];
