@@ -98,7 +98,7 @@ const Canvas = () => {
         register() {
             console.info("[Canvas] listening for resize events");
             document.body.innerHTML = "";
-            document.body.appendChild(canvas.dom);
+            document.body.appendChild(this.dom);
 
             document.body.addEventListener("resize", this.update_size);
         }
