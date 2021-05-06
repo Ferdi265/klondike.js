@@ -231,10 +231,11 @@ const CardStack = (backcolor, max, xoffset, yoffset) => {
     });
 };
 
-const CardFan = (backcolor, max) => {
+const CardFan = (backcolor, max, xoffset, yoffset) => {
     if (max === undefined) max = 13;
+    if (xoffset === undefined) xoffset = 1/3;
 
-    return CardStack(backcolor, max, 1/3, 0);
+    return CardStack(backcolor, max, xoffset, yoffset);
 };
 
 /* global */ canvas = null;
