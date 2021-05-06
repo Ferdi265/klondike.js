@@ -92,7 +92,7 @@ const Canvas = () => {
 const populateAssets = () => {
     const suits = ["S", "C", "H", "D"];
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    const other = ["J", "E", "BB", "BR"];
+    const other = ["J", "E", "N", "BB", "BR"];
 
     const addAsset = (name) => {
         assetList.push(Asset(name, `assets/${name}.svg`));
