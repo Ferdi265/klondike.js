@@ -1,3 +1,5 @@
+const debug = true;
+
 const Listeners = (target) => {
     const private = {
         target,
@@ -23,6 +25,7 @@ const Listeners = (target) => {
         },
     };
 
+    if (debug) self._private = private;
     return self;
 };
 
@@ -55,6 +58,7 @@ const Canvas = () => {
         }
     };
 
+    if (debug) self._private = private;
     return self;
 };
 
