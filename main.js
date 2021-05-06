@@ -40,7 +40,9 @@ const AssetLoader = () => {
             return this.assets[assetName].dom;
         },
 
-        load(assets, callback) {
+        load(assets, callback, progressCallback) {
+            if (progressCallback === undefined) progressCallback = () => {};
+
             let pending = assets.length;
             let loaded = 0;
             let failed = 0;
@@ -62,6 +64,8 @@ const AssetLoader = () => {
                 asset.loaded = true;
                 loaded++;
                 pending--;
+
+                progressCallback(pending, loaded, failed);
                 if (pending == 0) finishedCb();
             };
 
@@ -71,6 +75,8 @@ const AssetLoader = () => {
                 asset.failed = true;
                 failed++;
                 pending--;
+
+                progressCallback(pending, loaded, failed);
                 if (pending == 0) finishedCb();
             };
 
