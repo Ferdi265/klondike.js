@@ -186,16 +186,27 @@ const Card = (value, suit) => {
     });
 };
 
-const CardStack = (backcolor) => {
+const CardStack = (backcolor, xoffset, yoffset) => {
+    if (xoffset === undefined) xoffset = 0;
+    if (yoffset === undefined && xoffset === 0) yoffset = -1/16;
+    if (yoffset === undefined && xoffset !== 0) yoffset = 0;
+
     return inherit(null, {
         cards: [],
+
         hidden: backcolor !== undefined,
         backcolor,
+
+        xoffset,
+        yoffset,
 
         draw(canvas, assetLoader) {
             const cardNone = CardNone();
             const cardBack = this.hidden ? CardBack(this.backcolor) : null;
-            const height = assetLoader.get(cardNone.texture()).height;
+
+            const texture = assetLoader.get(cardNone.texture());
+            const width = texture.width;
+            const height = texture.height;
 
             if (this.cards.length === 0) {
                 cardNone.draw(canvas, assetLoader);
@@ -209,13 +220,17 @@ const CardStack = (backcolor) => {
                         card.draw(canvas, assetLoader);
                     }
 
-                    canvas.ctx.translate(0, -height / 16);
+                    canvas.ctx.translate(width * this.xoffset, height * this.yoffset);
                 });
 
                 canvas.ctx.restore();
             }
         }
     });
+};
+
+const CardFan = (backcolor) => {
+    return CardStack(backcolor, 1/3, 0);
 };
 
 /* global */ canvas = null;
