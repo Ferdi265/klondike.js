@@ -1,41 +1,68 @@
-const debug = true;
-
-const Listeners = (target) => {
-    const private = {
-        target,
-        handlers: []
-    };
-
+const Asset = (name, path) => {
     const self = {
-        register: (event, func, capture) => {
-            if (capture === undefined) capture = false;
-
-            private.handlers.push({ event, func, capture });
-            private.target.addEventListener(event, func, capture);
-        },
-        deregister: (event, func, capture) => {
-            private.handlers = private.handlers.filter((handler) => {
-                if (event !== undefined && event !== handler.event) return true;
-                if (func !== undefined && func !== handler.func) return true;
-                if (capture !== undefined && capture !== handler.capture) return true;
-
-                private.target.removeEventListener(handler.event, handler.func, handler.capture);
-                return false;
-            });
-        },
+        name,
+        path,
+        dom: undefined,
+        loaded: false,
+        failed: false,
     };
 
-    if (debug) self._private = private;
     return self;
 };
+
+const AssetLoader = () => {
+    const self = {
+        assets: {},
+
+        load: (assets, callback) => {
+            let pending = assets.length;
+            let loaded = 0;
+            let failed = 0;
+
+            const finishedCb = () => {
+                if (failed == 0) {
+                    console.info(`[AssetLoader] ${loaded} / ${loaded} assets loaded successfully`);
+                    callback(true);
+                } else {
+                    console.info(`[AssetLoader] ${loaded} / ${failed + loaded} assets loaded successfully`);
+                    callback(false);
+                }
+            };
+
+            const successCb = (asset) => {
+                console.debug(`[AssetLoader] loaded '${asset.name}'`);
+
+                asset.loaded = true;
+                loaded++;
+                pending--;
+                if (pending == 0) finishedCb();
+            };
+
+            const failCb = (asset) => {
+                console.error(`[AssetLoader] failed to load '${asset.name}'`);
+
+                asset.failed = true;
+                failed++;
+                pending--;
+                if (pending == 0) finishedCb();
+            };
+
+            assets.forEach((asset) => {
+                const dom = document.createElement("img");
+                asset.dom = dom;
+                dom.addEventListener("load", () => successCb(asset));
+                dom.addEventListener("error", () => failCb(asset));
+                dom.src = asset.path;
+            });
+        }
+    };
+
+    return self;
+}
 
 const Canvas = () => {
     const dom = document.createElement("canvas");
     const ctx = dom.getContext("2d");
-
-    const private = {
-        listeners: Listeners(dom)
-    };
 
     const self = {
         dom,
@@ -50,24 +77,49 @@ const Canvas = () => {
             document.body.innerHTML = "";
             document.body.appendChild(canvas.dom);
 
-            private.listeners.register("resize", self.update_size);
-        },
-
-        deregister: () => {
-            private.listeners.deregister();
+            document.body.addEventListener("resize", self.update_size);
         }
     };
 
-    if (debug) self._private = private;
     return self;
 };
 
 /* global */ canvas = null;
+/* global */ assetLoader = null;
+/* global */ assetList = [];
+
+const populateAssets = () => {
+    const suits = ["S", "C", "H", "D"];
+    const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+    const other = ["J", "E", "BB", "BR"];
+
+    const addAsset = (name) => {
+        assetList.push(Asset(name, `assets/${name}.svg`));
+    };
+
+    suits.forEach((suit) => {
+        values.forEach((value) => {
+            addAsset(value + suit);
+        });
+    });
+
+    other.forEach(addAsset);
+};
 
 const initialize = () => {
     canvas = Canvas();
     canvas.update_size();
     canvas.register();
+
+    assetLoader = AssetLoader();
+    populateAssets();
+    assetLoader.load(assetList, (success) => {
+        if (success) {
+            console.info("[Initialize] finished loading assets");
+        } else {
+            console.error("[Initialize] error loading assets");
+        }
+    });
 };
 
 window.addEventListener("DOMContentLoaded", initialize);
