@@ -1,20 +1,46 @@
+const inherit = (base, object) => {
+    const instance = Object.create(base);
+
+    Object.keys(object).forEach((key) => {
+        instance[key] = object[key];
+    });
+
+    return instance;
+};
+
 const Asset = (name, path) => {
-    const self = {
+    return inherit(null, {
         name,
         path,
         dom: undefined,
         loaded: false,
         failed: false,
-    };
-
-    return self;
+    });
 };
 
 const AssetLoader = () => {
-    const self = {
+    return inherit(null, {
         assets: {},
 
-        load: (assets, callback) => {
+        has(assetName) {
+            if (!Object.property.hasOwnProperty.call(this.assets, assetName)) return false;
+            if (!this.assets[assetName].loaded) return false;
+
+            return true;
+        },
+
+        get(assetName) {
+            if (!Object.property.hasOwnProperty.call(this.assets, assetName)) {
+                throw Error(`[AssetLoader] asset ${assetName} does not exist`);
+            }
+            if (!this.assets[assetName].loaded) {
+                throw Error(`[AssetLoader] asset ${assetName} is not loaded`);
+            }
+
+            return this.assets[assetName].dom;
+        },
+
+        load(assets, callback) {
             let pending = assets.length;
             let loaded = 0;
             let failed = 0;
@@ -31,7 +57,7 @@ const AssetLoader = () => {
 
             const successCb = (asset) => {
                 console.debug(`[AssetLoader] loaded '${asset.name}'`);
-                self.assets[asset.name] = asset;
+                this.assets[asset.name] = asset;
 
                 asset.loaded = true;
                 loaded++;
@@ -56,33 +82,102 @@ const AssetLoader = () => {
                 dom.src = asset.path;
             });
         }
-    };
-
-    return self;
-}
+    });
+};
 
 const Canvas = () => {
     const dom = document.createElement("canvas");
     const ctx = dom.getContext("2d");
 
-    const self = {
+    return inherit(null, {
         dom,
         ctx,
 
-        update_size: () => {
-            self.dom.width = window.innerWidth;
-            self.dom.height = window.innerHeight;
+        update_size() {
+            this.dom.width = window.innerWidth;
+            this.dom.height = window.innerHeight;
         },
 
-        register: () => {
+        register() {
             document.body.innerHTML = "";
             document.body.appendChild(canvas.dom);
 
-            document.body.addEventListener("resize", self.update_size);
+            document.body.addEventListener("resize", this.update_size);
         }
-    };
+    });
+};
 
-    return self;
+const TexturedObject = () => {
+    return inherit(null, {
+        texture() {
+            throw Error("[TexturedObject] tried to draw object without a texture");
+        },
+
+        draw(canvas, assetLoader) {
+            let texture = assetLoader.get(this.texture());
+            canvas.ctx.drawImage(texture, 0, 0);
+        }
+    });
+};
+
+const ConstTexturedObject = (assetName) => {
+    return inherit(TexturedObject(), {
+        texture() {
+            return assetName;
+        }
+    });
+};
+
+const CardBack = (backcolor) => {
+    return ConstTexturedObject("B" + backcolor);
+};
+
+const CardEmpty = () => {
+    return ConstTexturedObject("E");
+};
+
+const CardNone = () => {
+    return ConstTexturedObject("N");
+};
+
+const Card = (value, suit) => {
+    return inherit(TexturedObject(), {
+        value,
+        suit,
+
+        negativeValue() {
+            if (this.value === null) {
+                return 25;
+            } else if (this.value === 1) {
+                return 20;
+            } else {
+                return this.value;
+            }
+        },
+
+        texture() {
+            let assetName;
+            if (this.value === null) {
+                assetName = "J";
+            } else {
+                if (this.value === 1) {
+                    assetName = "A";
+                } else if (this.value === 11) {
+                    assetName = "J";
+                } else if (this.value === 11) {
+                    assetName = "Q";
+                } else if (this.value === 11) {
+                    assetName = "K";
+                } else {
+                    assetName = String(this.value);
+                }
+
+                assetName += this.suit;
+            }
+
+            return assetName;
+        },
+    });
 };
 
 /* global */ canvas = null;
